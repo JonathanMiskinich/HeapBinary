@@ -23,6 +23,11 @@ namespace HeapBinaria
         {
             get {return this.heap;}
         }
+        public void SetHeap(List<Proceso> l)
+        {
+            this.heap = l;
+            Heapify((l.Count / 2) - 1);
+        }
         public void SetComparacion(IComparacion c)
         {
             this.comparar = c;
@@ -47,12 +52,12 @@ namespace HeapBinaria
         }
         public void Heapify(int i)
         {
-            if (i <= 0)
+            if (i < 0)
                 return;
             else
             {
                 DownHeap(i);
-                Heapify(i -1);
+                Heapify(i-1);
             }
         }
         public bool EstaVacio()
@@ -65,7 +70,7 @@ namespace HeapBinaria
         }
         public bool EsHoja(int indice)
         {
-            return indice/2 > this.heap.Count; 
+            return indice >= this.heap.Count/2; 
         }
         //Metodos Auxiliares
         protected void Intercambio(int indice, int i2)
@@ -86,7 +91,9 @@ namespace HeapBinaria
         }
         protected static int IndicePadre(int i)
         {
-            return (i -1) / 2;
+            if (i != 0)
+                return (i -1) / 2;
+            return 0;
         }
         protected int? Comparar(Proceso p, Proceso p1)
         {
@@ -98,7 +105,7 @@ namespace HeapBinaria
         public bool TieneHijoIzquierdo(int indice)
         {
             int indiceHijoIzquierdo = IndiceHijoIzq(indice);
-            if (indiceHijoIzquierdo <= heap.Count)
+            if (indiceHijoIzquierdo <= heap.Count - 1)
                 return true;
             else
                 return false;
@@ -106,7 +113,7 @@ namespace HeapBinaria
         public bool TieneHijoDerecho(int indice)
         {
             int indiceHijoDerecho = IndiceHijoDerecho(indice);
-            if (indiceHijoDerecho <= heap.Count)
+            if (indiceHijoDerecho <= heap.Count - 1)
                 return true;
             else
                 return false;
