@@ -12,9 +12,9 @@ namespace HeapBinaria
             this.heap = new List<Proceso>();
             this.comparar = null;
         }
-        public Heap(List<Proceso> list)
+        public Heap(List<Proceso> list, IComparacion comp)
         {
-            this.comparar = null;
+            this.comparar = comp;
             this.heap = list;
             Heapify((list.Count / 2) - 1);
         }
@@ -41,7 +41,7 @@ namespace HeapBinaria
         public Proceso EliminarRaiz()
         {
             Proceso proc = heap[0];
-            heap.Insert(0, heap[heap.Count - 1]);
+            heap[0] = heap[heap.Count - 1];
             heap.RemoveAt(heap.Count - 1);
             DownHeap(0);
             return proc;
@@ -50,7 +50,11 @@ namespace HeapBinaria
         {
             return this.heap[0];
         }
-        public void Heapify(int i)
+        public Proceso ObtenerNodo(int indice)
+        {
+            return heap[indice];
+        }
+        protected void Heapify(int i)
         {
             if (i < 0)
                 return;
@@ -70,7 +74,7 @@ namespace HeapBinaria
         }
         public bool EsHoja(int indice)
         {
-            return indice >= this.heap.Count/2; 
+            return indice >= this.heap.Count/2;
         }
         //Metodos Auxiliares
         protected void Intercambio(int indice, int i2)
@@ -79,8 +83,46 @@ namespace HeapBinaria
             heap[indice] = heap[i2];
             heap[i2] = temporal; 
         }
-        public virtual void UpHeap(int indice){}
-        public virtual void DownHeap(int indice){}
+        protected virtual void UpHeap(int indice)
+        {
+            if (indice <= 0)
+                return;
+
+            if(ChequearIntercambio(heap[indice], heap[IndicePadre(indice)]))
+            {
+                Intercambio(indice, IndicePadre(indice));
+                UpHeap(IndicePadre(indice));
+            }
+        }
+        protected virtual void DownHeap(int indice)
+        {
+             if (EsHoja(indice))
+                return;
+            
+            int hijoAIntercambiar = -1;
+
+            if (TieneHijoDerecho(indice))
+            {
+                if(ChequearIntercambio(heap[IndiceHijoDerecho(indice)], heap[IndiceHijoIzq(indice)]))
+                {
+                    if(ChequearIntercambio(heap[IndiceHijoDerecho(indice)], heap[indice]))
+                        hijoAIntercambiar = IndiceHijoDerecho(indice);
+                }
+                else if(ChequearIntercambio(heap[IndiceHijoIzq(indice)], heap[indice]))
+                    hijoAIntercambiar = IndiceHijoIzq(indice);
+            }else
+            {
+                if(ChequearIntercambio(heap[IndiceHijoIzq(indice)], heap[indice]))
+                    hijoAIntercambiar = IndiceHijoIzq(indice);
+            }
+
+            if (hijoAIntercambiar != -1)
+            {
+                Intercambio(indice, hijoAIntercambiar);
+                DownHeap(hijoAIntercambiar);
+            }
+        }
+        protected abstract bool ChequearIntercambio(Proceso p, Proceso p2);
         protected static int IndiceHijoIzq(int i)
         {
             return (2*i) +1;
